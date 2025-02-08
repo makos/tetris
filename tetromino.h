@@ -1,7 +1,7 @@
 typedef struct Renderer Renderer;
 
 typedef struct Tetromino {
-    int* shape;
+    int shape;
     int rotation; // in range 0..3
     int x;
     int y;

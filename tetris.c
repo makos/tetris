@@ -10,7 +10,6 @@
 
 Renderer renderer;
 Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
-bool running = true;
 
 void shutdown_renderer() { 
     SDL_DestroyWindow(renderer.w);
@@ -31,6 +30,7 @@ void render(Tetromino* t) {
 }
 
 int main() {
+    bool running = true;
     Uint64 frame_start_time = 0;
     Uint64 frame_end_time = 0;
     Uint64 last_block_tick_time = 0;
@@ -65,7 +65,7 @@ int main() {
                     if (can_move_to(current_tetromino, 1, 0, 0)) 
                         current_tetromino->y += 1;
                     break;
-                case 'z':
+                case SDLK_z:
                     if (can_move_to(current_tetromino, 0, 0, 1)) {
                         current_tetromino->rotation = (current_tetromino->rotation + 1) % 4;
                     }
