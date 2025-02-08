@@ -1,0 +1,18 @@
+#ifndef __DEFS_H
+#define __DEFS_H
+
+#define SCREEN_WIDTH 400
+#define SCREEN_HEIGHT 800
+
+#define BOARD_WIDTH 10
+#define BOARD_HEIGHT 20
+
+#define BLOCK_WIDTH SCREEN_WIDTH/BOARD_WIDTH
+#define BLOCK_HEIGHT SCREEN_HEIGHT/BOARD_HEIGHT
+
+#define BLOCK_TICK_INTERVAL 700
+
+#define COLOR_WHITE 0xffffff
+#define COLOR_BLACK 0x000000
+
+#endif //__DEFS_H
