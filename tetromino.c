@@ -62,7 +62,9 @@ Tetromino* create_tetromino() {
 /* Return true if a space in the 4x4 shape matrix is an empty (0) bit. */
 bool is_empty(Tetromino* t, int row, int col) {
     int shift = col + row * 4;
-    int bit = 0x8000;
+    int bit = 0x8000; // 1000 0000 0000 0000
+                      // shift it to the right by `shift` bits to check
+                      // the given matrix value
     return !((bit >> shift) & shapes[t->shape][t->rotation]);
 }
 
