@@ -1,4 +1,5 @@
 typedef struct Renderer Renderer;
+typedef struct Board Board;
 
 typedef struct Tetromino {
     int shape;
@@ -10,4 +11,4 @@ typedef struct Tetromino {
 Tetromino* create_tetromino();
 bool is_empty(Tetromino* t, int row, int col);
 void render_tetromino (Tetromino *t, Renderer *r);
-bool can_move_to(Tetromino* t, int dest_y, int dest_x, int next_rot);
+bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot);

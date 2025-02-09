@@ -11,15 +11,14 @@ typedef enum BlockType {
     BLOCK_FULL
 } BlockType;
 
-typedef struct Block {
-    //int x;
-    //int y;
-    BlockType type;
-} Block;
+typedef struct Board {
+    BlockType cell[BOARD_HEIGHT][BOARD_WIDTH];
+} Board;
 
 
-void init_board(Block b[BOARD_HEIGHT][BOARD_WIDTH]);
-void render_board(Renderer* rend, Block b[BOARD_HEIGHT][BOARD_WIDTH]);
-void store_tetromino(Block b[BOARD_HEIGHT][BOARD_WIDTH], Tetromino* t);
+Board* init_board();
+bool has_block(Board* b, int y, int x);
+void render_board(Renderer* rend, Board* b); 
+void store_tetromino(Board* b, Tetromino* t);
 
 #endif //__BOARD_H

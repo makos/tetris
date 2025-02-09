@@ -7,6 +7,7 @@
 #include "tetromino.h"
 #include "defs.h"
 #include "render.h"
+#include "board.h"
 
 // Enum in order of shapes as they appear in shapes[][] below.
 enum Shapes {SHAPE_L, SHAPE_I, SHAPE_O, SHAPE_J, SHAPE_S, SHAPE_Z, SHAPE_T};
@@ -85,7 +86,7 @@ void render_tetromino (Tetromino *t, Renderer* rend) {
  * "rotated" means that we should check if rotating the piece doesn't collide.
  * TODO: add collision with blocks stored in game_board.
  */
-bool can_move_to(Tetromino* t, int dest_y, int dest_x, int next_rot) { 
+bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
     // Save current rotation in case the checks fail.
     int old_rot = t->rotation % 4;
     if (next_rot) {
@@ -98,11 +99,17 @@ bool can_move_to(Tetromino* t, int dest_y, int dest_x, int next_rot) {
                 && (t->x + x + dest_x < 0 
                     || t->x + x + dest_x > BOARD_WIDTH - 1 
                     || t->y + y + dest_y > BOARD_HEIGHT - 1)) {
-                t->rotation = old_rot;
-                return false;
+                goto cant_move;
+            }
+            if ((!(is_empty(t, y, x)) && has_block(b, t->y + y + dest_y, t->x + x + dest_x))) {
+                goto cant_move;
             }
         }
     }
+
     t->rotation = old_rot;
     return true;
+cant_move:
+    t->rotation = old_rot;
+    return false;
 }
