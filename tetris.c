@@ -10,30 +10,36 @@
 #include "board.h"
 
 Renderer renderer;
-//Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
 Board* game_board;
 Tetromino* current_tetromino;
 Tetromino* next_tetromino;
 
-void shutdown_renderer() { 
-    SDL_DestroyWindow(renderer.w);
-    renderer.w = NULL;
-    renderer.w_surf = NULL;
-    SDL_Quit();   
-}
-
 void shutdown_game() {
-
+    free(current_tetromino);
+    free(next_tetromino);
+    free(game_board);
 }
 
 void render() {
-    SDL_FillRect(renderer.w_surf, NULL, COLOR_BLACK);
+    char score_text[1024];
+    sprintf(score_text, "%d", game_board->score);
+
+    clear_screen(&renderer);
     render_board(&renderer, game_board);
     render_tetromino(current_tetromino, &renderer);
     render_tetromino(next_tetromino, &renderer);
-    SDL_UpdateWindowSurface(renderer.w);
+    draw_text(&renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, score_text);
+    update_screen(&renderer);
 }
 
+/* TODO:
+ * - blocks with various colors
+ * - scoring
+ * - level progression (speed)
+ * - restarting the game
+ * - hard drop
+ * - menu
+ */
 int main() {
     srand(time(NULL));
     bool running = true;
@@ -83,7 +89,7 @@ int main() {
         }
 
         /* Block falling - fall one cell every second. */
-        if (frame_start_time - last_block_tick_time >= BLOCK_TICK_INTERVAL) {
+        if (frame_start_time - last_block_tick_time >= game_board->fall_delay) {
             if (can_move_to(current_tetromino, game_board, 1, 0, 0)) 
                 current_tetromino->y += 1;
             else {
@@ -99,7 +105,15 @@ store:
 
         if (!check_lines(game_board))
             running = false;
-        
+
+        //falltime = (0.8 - ((level-1) * 0.007)) ^ (level-1) [in seconds]
+        if (game_board->lines_cleared % 10 == 0 && game_board->lines_cleared / 10 == game_board->level) {
+            printf("level old: %d\n", game_board->level);
+            game_board->level++;
+            printf("level new: %d\n", game_board->level);
+            update_fall_delay(game_board);
+            printf("fall delay: %d\n", game_board->fall_delay);
+        }
         render();
 
         frame_end_time = SDL_GetTicks64();
@@ -109,11 +123,9 @@ store:
         }
     }
 
-    SDL_Delay(2000);
-    free(current_tetromino);
-    free(next_tetromino);
-    free(game_board);
-    shutdown_renderer();
+    //TODO: hack, implement pausing and restarting the game.
+    //SDL_Delay(2000);
+    shutdown_renderer(&renderer);
     shutdown_game();
     return 0;
 }

@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <SDL2/SDL.h>
-
 #include "tetromino.h"
 #include "defs.h"
 #include "render.h"
@@ -84,8 +82,9 @@ void render_tetromino (Tetromino *t, Renderer* rend) {
         for (int x = 0; x < 4; x++) {
             if (!is_empty(t, y, x)) {
                 //TODO: Refactor this out into render.c and provide drawing methods.
-                SDL_Rect r = get_block_rect(t->y + y, t->x + x);
-                SDL_FillRect(rend->w_surf, &r, COLOR_WHITE);
+                draw_block(rend, t->y + y, t->x + x, COLOR_WHITE);
+                //SDL_Rect r = get_block_rect(t->y + y, t->x + x);
+                //SDL_FillRect(rend->w_surf, &r, COLOR_WHITE);
             }
         }
     }
@@ -93,7 +92,6 @@ void render_tetromino (Tetromino *t, Renderer* rend) {
 
 /* Check if current piece can move to specified (y,x,rotated) space.
  * "rotated" means that we should check if rotating the piece doesn't collide.
- * TODO: add collision with blocks stored in game_board.
  */
 bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
     // Save current rotation in case the checks fail.

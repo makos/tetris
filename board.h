@@ -13,6 +13,10 @@ typedef enum BlockType {
 
 typedef struct Board {
     BlockType cell[BOARD_HEIGHT][BOARD_WIDTH];
+    int score;
+    int lines_cleared;
+    int fall_delay;
+    int level;
 } Board;
 
 
@@ -22,5 +26,6 @@ void render_board(Renderer* rend, Board* b);
 void store_tetromino(Board* b, Tetromino* t);
 bool check_lines(Board* b);
 void clear_line(Board* b, int y);
+void update_fall_delay(Board* b);
 
 #endif //__BOARD_H

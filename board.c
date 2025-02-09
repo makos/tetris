@@ -1,5 +1,6 @@
-#include <SDL2/SDL.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "tetromino.h"
 #include "board.h"
@@ -10,6 +11,10 @@
  */
 Board* init_board() {
     Board* b = malloc(sizeof(Board));
+    b->score = 0;
+    b->lines_cleared = 0;
+    b->level = 1;
+    update_fall_delay(b);
 
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
@@ -17,6 +22,11 @@ Board* init_board() {
         }
     }
     return b;
+}
+
+void update_fall_delay(Board* b) {
+    double d = pow((0.8 - ((b->level - 1) * 0.007)), (b->level - 1)) * 1000;
+    b->fall_delay = (int)d;
 }
 
 /* Save the piece to the board. */
@@ -55,8 +65,11 @@ bool check_lines(Board* b) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             if (!has_block(b, y, x))
                 break;
-            if (x == BOARD_WIDTH - 1)
+            if (x == BOARD_WIDTH - 1) {
                 clear_line(b, y);
+                b->score += 100;
+                b->lines_cleared++;
+            }
         }
     }
     return true;
@@ -71,20 +84,15 @@ void clear_line(Board* b, int y) {
 }
 
 /* Render blocks saved on the board.
- * TODO: move the SDL calls out into API methods from render.c.
  */
 void render_board(Renderer* rend, Board* b) {
-    SDL_Rect r;
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            r = get_block_rect(y, x);
             switch (b->cell[y][x]) {
                 case BLOCK_EMPTY:
-                    // e.g. draw_block(color);
-                    //SDL_FillRect(rend->w_surf, &r, COLOR_BLACK);
                     break;
                 case BLOCK_FULL:
-                    SDL_FillRect(rend->w_surf, &r, COLOR_RED);
+                    draw_block(rend, y, x, COLOR_RED);
                     break;
             }
         }
