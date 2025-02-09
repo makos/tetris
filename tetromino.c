@@ -46,18 +46,27 @@ int start_offset[7][2] = {
     { -1, 2 }  // T
 };
 
-/* Create new randomly chosen piece. */
-Tetromino* create_tetromino() {
+/* Create new randomly chosen piece. 
+ * (y,x) - position to create the piece in; 0,0 to spawn on the board,
+ * above BOARD_WIDTH to spawn on the side as a "next" piece.
+ */
+
+Tetromino* create_tetromino(int y, int x) {
     int rand_shape = rand() % 7;
     Tetromino* t = malloc(sizeof(Tetromino));
 
     t->shape = rand_shape;
     //t->shape = SHAPE_T;
     t->rotation = 0;
-    t->y = start_offset[t->shape][0];
-    t->x = start_offset[t->shape][1];
+    t->y = y + start_offset[t->shape][0];
+    t->x = x + start_offset[t->shape][1];
 
     return t;
+}
+
+void move_to_spawn(Tetromino* t) {
+    t->y = start_offset[t->shape][0];
+    t->x = start_offset[t->shape][1];
 }
 
 /* Return true if a space in the 4x4 shape matrix is an empty (0) bit. */

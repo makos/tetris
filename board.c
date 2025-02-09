@@ -30,6 +30,9 @@ void store_tetromino(Board* b, Tetromino* t) {
     }
 }
 
+/* Return true if given (y,x) coordinate corresponds to a saved block in
+ * the game board. 
+ */
 bool has_block(Board* b, int y, int x) {
     if (y < 0 || x < 0 || y > BOARD_HEIGHT - 1 || x > BOARD_WIDTH - 1)
         return false;
@@ -38,6 +41,33 @@ bool has_block(Board* b, int y, int x) {
         return false;
     else
         return true;
+}
+/* Check if any lines need deleting (full), or if blocks reached the top of the
+ * screen - which means game over.
+ */
+bool check_lines(Board* b) {
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        if (has_block(b, 0, x))
+            return false;
+    }
+    // Check bottom to top, left to right
+    for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            if (!has_block(b, y, x))
+                break;
+            if (x == BOARD_WIDTH - 1)
+                clear_line(b, y);
+        }
+    }
+    return true;
+}
+
+void clear_line(Board* b, int y) {
+    for (; y > 0; y--) {
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            b->cell[y][x] = b->cell[y-1][x];
+        }
+    }
 }
 
 /* Render blocks saved on the board.

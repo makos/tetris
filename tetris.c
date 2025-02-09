@@ -13,6 +13,7 @@ Renderer renderer;
 //Block game_board[BOARD_HEIGHT][BOARD_WIDTH];
 Board* game_board;
 Tetromino* current_tetromino;
+Tetromino* next_tetromino;
 
 void shutdown_renderer() { 
     SDL_DestroyWindow(renderer.w);
@@ -29,6 +30,7 @@ void render() {
     SDL_FillRect(renderer.w_surf, NULL, COLOR_BLACK);
     render_board(&renderer, game_board);
     render_tetromino(current_tetromino, &renderer);
+    render_tetromino(next_tetromino, &renderer);
     SDL_UpdateWindowSurface(renderer.w);
 }
 
@@ -42,7 +44,8 @@ int main() {
     game_board = init_board();
     init_renderer(&renderer);
 
-    current_tetromino = create_tetromino();
+    current_tetromino = create_tetromino(0, 0);
+    next_tetromino = create_tetromino(1, BOARD_WIDTH-2);
 
     SDL_Event e;
     while (running) {
@@ -68,28 +71,34 @@ int main() {
                 case SDLK_DOWN:
                     if (can_move_to(current_tetromino, game_board, 1, 0, 0)) 
                         current_tetromino->y += 1;
+                    else
+                        goto store;
                     break;
                 case SDLK_z:
-                    if (can_move_to(current_tetromino, game_board, 0, 0, 1)) {
+                    if (can_move_to(current_tetromino, game_board, 0, 0, 1))
                         current_tetromino->rotation = (current_tetromino->rotation + 1) % 4;
-                    }
+                    break;
                 }
             }
         }
-
 
         /* Block falling - fall one cell every second. */
         if (frame_start_time - last_block_tick_time >= BLOCK_TICK_INTERVAL) {
             if (can_move_to(current_tetromino, game_board, 1, 0, 0)) 
                 current_tetromino->y += 1;
+            else {
+store:
+                store_tetromino(game_board, current_tetromino);
+                free(current_tetromino);
+                current_tetromino = next_tetromino;
+                move_to_spawn(current_tetromino);
+                next_tetromino = create_tetromino(1, BOARD_WIDTH-2);
+            }
             last_block_tick_time = frame_start_time;
         }
 
-        if (!can_move_to(current_tetromino, game_board, 1, 0, 0)) {
-            store_tetromino(game_board, current_tetromino);
-            free(current_tetromino);
-            current_tetromino = create_tetromino();
-        }
+        if (!check_lines(game_board))
+            running = false;
         
         render();
 
@@ -100,7 +109,9 @@ int main() {
         }
     }
 
+    SDL_Delay(2000);
     free(current_tetromino);
+    free(next_tetromino);
     free(game_board);
     shutdown_renderer();
     shutdown_game();

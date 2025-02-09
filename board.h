@@ -20,5 +20,7 @@ Board* init_board();
 bool has_block(Board* b, int y, int x);
 void render_board(Renderer* rend, Board* b); 
 void store_tetromino(Board* b, Tetromino* t);
+bool check_lines(Board* b);
+void clear_line(Board* b, int y);
 
 #endif //__BOARD_H
