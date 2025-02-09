@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
+#include <time.h>
 
 #include "tetromino.h"
 #include "defs.h"
@@ -30,6 +31,7 @@ void render(Tetromino* t) {
 }
 
 int main() {
+    srand(time(NULL));
     bool running = true;
     Uint64 frame_start_time = 0;
     Uint64 frame_end_time = 0;
