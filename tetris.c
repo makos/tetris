@@ -21,13 +21,13 @@ void shutdown_game() {
 }
 
 void render() {
-    char score_text[1024];
+    char score_text[256];
     sprintf(score_text, "%d", game_board->score);
 
     clear_screen(&renderer);
     render_board(&renderer, game_board);
-    render_tetromino(current_tetromino, &renderer);
-    render_tetromino(next_tetromino, &renderer);
+    render_tetromino(&renderer, current_tetromino);
+    render_tetromino(&renderer, next_tetromino);
     draw_text(&renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, score_text);
     update_screen(&renderer);
 }
@@ -35,6 +35,7 @@ void render() {
 /* TODO:
  * - blocks with various colors
  * - scoring
+ * - better spawning system - a randomized "bag"
  * - level progression (speed)
  * - restarting the game
  * - hard drop

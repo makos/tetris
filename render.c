@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+//#include <SDL3/SDL.h>
 
 #include "render.h"
 #include "defs.h"
@@ -43,6 +44,9 @@ SDL_Rect get_block_rect(int y, int x) {
 void draw_block(Renderer *r, int y, int x, int color) {
     SDL_Rect rect = get_block_rect(y, x);
     SDL_FillRect(r->w_surf, &rect, color);
+}
+
+void draw_border(Renderer* r) {
 }
 
 void shutdown_renderer(Renderer* r) { 

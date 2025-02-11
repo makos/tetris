@@ -77,7 +77,7 @@ bool is_empty(Tetromino* t, int row, int col) {
 }
 
 /* Draw the given tetromino. */
-void render_tetromino (Tetromino *t, Renderer* rend) {
+void render_tetromino (Renderer* rend, Tetromino *t) {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
             if (!is_empty(t, y, x)) {
