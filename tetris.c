@@ -52,6 +52,13 @@ int main() {
     init_renderer(&renderer);
 
     current_tetromino = create_tetromino(0, 0);
+    // Check what we pulled, if we got S, Z or O, redo.
+    while (current_tetromino->shape == SHAPE_O
+            || current_tetromino->shape == SHAPE_S 
+            || current_tetromino->shape == SHAPE_Z) {
+        free(current_tetromino);
+        current_tetromino = create_tetromino(0, 0);
+    } 
     next_tetromino = create_tetromino(1, BOARD_WIDTH-2);
 
     SDL_Event e;

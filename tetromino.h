@@ -1,6 +1,9 @@
 typedef struct Renderer Renderer;
 typedef struct Board Board;
 
+// Enum in order of shapes as they appear in shapes[][] below.
+enum Shapes {SHAPE_L, SHAPE_I, SHAPE_O, SHAPE_J, SHAPE_S, SHAPE_Z, SHAPE_T};
+
 typedef struct Tetromino {
     int shape;
     int rotation; // in range 0..3

@@ -7,8 +7,6 @@
 #include "render.h"
 #include "board.h"
 
-// Enum in order of shapes as they appear in shapes[][] below.
-enum Shapes {SHAPE_L, SHAPE_I, SHAPE_O, SHAPE_J, SHAPE_S, SHAPE_Z, SHAPE_T};
 
 /* Shapes and their rotations.
  * shapes[][] 2D array holds 7 tetrominos, each with 4 rotations.
