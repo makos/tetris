@@ -50,6 +50,7 @@ int main() {
     
     game_board = init_board();
     init_renderer(&renderer);
+    shuffle_bag();
 
     current_tetromino = create_tetromino(0, 0);
     // Check what we pulled, if we got S, Z or O, redo.
@@ -57,6 +58,7 @@ int main() {
             || current_tetromino->shape == SHAPE_S 
             || current_tetromino->shape == SHAPE_Z) {
         free(current_tetromino);
+        shuffle_bag();
         current_tetromino = create_tetromino(0, 0);
     } 
     next_tetromino = create_tetromino(1, BOARD_WIDTH-2);
@@ -133,6 +135,7 @@ store:
 
     //TODO: hack, implement pausing and restarting the game.
     //SDL_Delay(2000);
+    printf("\nFinal score: %d\nLevel: %d\n", game_board->score, game_board->level);
     shutdown_renderer(&renderer);
     shutdown_game();
     return 0;

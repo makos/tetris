@@ -13,6 +13,8 @@ typedef struct Tetromino {
 
 Tetromino* create_tetromino(int y, int x);
 bool is_empty(Tetromino* t, int row, int col);
+void shuffle_bag();
+int pull_from_bag();
 void move_to_spawn(Tetromino *t);
 void render_tetromino (Renderer *r, Tetromino *t);
 bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot);

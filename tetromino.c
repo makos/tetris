@@ -1,12 +1,15 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+//#include <stdio.h>
 
 #include "tetromino.h"
 #include "defs.h"
 #include "render.h"
 #include "board.h"
 
+int bag[7] = { 0, 1, 2, 3, 4, 5, 6 };
+int pulls = 0;
 
 /* Shapes and their rotations.
  * shapes[][] 2D array holds 7 tetrominos, each with 4 rotations.
@@ -42,13 +45,49 @@ int start_offset[7][2] = {
     { -1, 2 }  // T
 };
 
+//void debug_print_bag(int get) {
+//    printf("Bag: ");
+//    for (int i = 0; i < 7; i++) {
+//        printf("%d ", bag[i]);
+//    }
+//    printf("\n");
+//            
+//    char c = 'I';
+//
+//    switch(get) {
+//        case SHAPE_I:
+//            c = 'I';
+//            break;
+//        case SHAPE_O:
+//            c = 'O';
+//            break;
+//        case SHAPE_T:
+//            c = 'T';
+//            break;
+//        case SHAPE_J:
+//            c = 'J';
+//            break;
+//        case SHAPE_S:
+//            c = 'S';
+//            break;
+//        case SHAPE_Z:
+//            c = 'Z';
+//            break;
+//        case SHAPE_L:
+//            c = 'L';
+//            break;
+//    }
+//    printf("Pull #%d, got %c\n", pulls, c);
+//}
+
 /* Create new randomly chosen piece. 
  * (y,x) - position to create the piece in; 0,0 to spawn on the board,
  * above BOARD_WIDTH to spawn on the side as a "next" piece.
  */
-
 Tetromino* create_tetromino(int y, int x) {
-    int rand_shape = rand() % 7;
+    //int rand_shape = rand() % 7;
+    int rand_shape = pull_from_bag();
+    //debug_print_bag(rand_shape);
     Tetromino* t = malloc(sizeof(Tetromino));
 
     t->shape = rand_shape;
@@ -58,6 +97,24 @@ Tetromino* create_tetromino(int y, int x) {
     t->x = x + start_offset[t->shape][1];
 
     return t;
+}
+
+void shuffle_bag() {
+    pulls = 0;
+    for (int i = 6; i > 0; i--) {
+        int j = rand() % 7;
+        int buf = bag[j];
+        bag[j] = bag[i];
+        bag[i] = buf;
+    }
+}
+
+int pull_from_bag() {
+    pulls++;
+    if (pulls > 6) {
+        shuffle_bag();
+    }
+    return bag[pulls];
 }
 
 void move_to_spawn(Tetromino* t) {
