@@ -34,9 +34,7 @@ void render() {
 
 /* TODO:
  * - blocks with various colors
- * - scoring
- * - better spawning system - a randomized "bag"
- * - level progression (speed)
+ * - better scoring (multipliers)
  * - restarting the game
  * - hard drop
  * - menu
