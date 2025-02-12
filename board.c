@@ -67,7 +67,7 @@ bool check_lines(Board* b) {
                 break;
             if (x == BOARD_WIDTH - 1) {
                 clear_line(b, y);
-                b->score += 100;
+                b->score += 100 * b->level;
                 b->lines_cleared++;
             }
         }

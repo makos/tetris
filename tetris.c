@@ -42,6 +42,7 @@ void render() {
 int main() {
     srand(time(NULL));
     bool running = true;
+    bool levelled_up = true;
     Uint64 frame_start_time = 0;
     Uint64 frame_end_time = 0;
     Uint64 last_block_tick_time = 0;
@@ -115,12 +116,18 @@ store:
             running = false;
 
         //falltime = (0.8 - ((level-1) * 0.007)) ^ (level-1) [in seconds]
-        if (game_board->lines_cleared % 10 == 0 && game_board->lines_cleared / 10 == game_board->level) {
-            printf("level old: %d\n", game_board->level);
-            game_board->level++;
-            printf("level new: %d\n", game_board->level);
-            update_fall_delay(game_board);
-            printf("fall delay: %d\n", game_board->fall_delay);
+        //TODO Update this - needs to check once every 10 levels and apply scoring ONCE!
+        if (game_board->lines_cleared % 10 == 0) {
+            if (!levelled_up) {
+                printf("level old: %d\n", game_board->level);
+                game_board->level++;
+                printf("level new: %d\n", game_board->level);
+                printf("lines cleared: %d\n", game_board->lines_cleared);
+                update_fall_delay(game_board);
+            }
+            levelled_up = true;
+        } else {
+            levelled_up = false;
         }
         render();
 
