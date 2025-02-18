@@ -147,10 +147,12 @@ void render_tetromino (Renderer* rend, Tetromino *t) {
 
 /* Check if current piece can move to specified (y,x,rotated) space.
  * "rotated" means that we should check if rotating the piece doesn't collide.
+ * TODO: add wall kicks (check if we can rotate the piece by moving it one
+ * cell to the side)
  */
 bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
     // Save current rotation in case the checks fail.
-    int old_rot = t->rotation % 4;
+    int old_rot = t->rotation;
     if (next_rot) {
         t->rotation = (t->rotation + 1) % 4;
     }
