@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
-//#include <stdio.h>
 
 #include "tetromino.h"
 #include "defs.h"
@@ -45,53 +44,15 @@ int start_offset[7][2] = {
     { -1, 2 }  // T
 };
 
-//void debug_print_bag(int get) {
-//    printf("Bag: ");
-//    for (int i = 0; i < 7; i++) {
-//        printf("%d ", bag[i]);
-//    }
-//    printf("\n");
-//            
-//    char c = 'I';
-//
-//    switch(get) {
-//        case SHAPE_I:
-//            c = 'I';
-//            break;
-//        case SHAPE_O:
-//            c = 'O';
-//            break;
-//        case SHAPE_T:
-//            c = 'T';
-//            break;
-//        case SHAPE_J:
-//            c = 'J';
-//            break;
-//        case SHAPE_S:
-//            c = 'S';
-//            break;
-//        case SHAPE_Z:
-//            c = 'Z';
-//            break;
-//        case SHAPE_L:
-//            c = 'L';
-//            break;
-//    }
-//    printf("Pull #%d, got %c\n", pulls, c);
-//}
-
 /* Create new randomly chosen piece. 
  * (y,x) - position to create the piece in; 0,0 to spawn on the board,
  * above BOARD_WIDTH to spawn on the side as a "next" piece.
  */
 Tetromino* create_tetromino(int y, int x) {
-    //int rand_shape = rand() % 7;
     int rand_shape = pull_from_bag();
-    //debug_print_bag(rand_shape);
     Tetromino* t = malloc(sizeof(Tetromino));
 
     t->shape = rand_shape;
-    //t->shape = SHAPE_T;
     t->rotation = 0;
     t->y = y + start_offset[t->shape][0];
     t->x = x + start_offset[t->shape][1];
@@ -136,10 +97,7 @@ void render_tetromino (Renderer* rend, Tetromino *t) {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
             if (!is_empty(t, y, x)) {
-                //TODO: Refactor this out into render.c and provide drawing methods.
                 draw_block(rend, t->y + y, t->x + x, COLOR_WHITE);
-                //SDL_Rect r = get_block_rect(t->y + y, t->x + x);
-                //SDL_FillRect(rend->w_surf, &r, COLOR_WHITE);
             }
         }
     }
