@@ -1,5 +1,5 @@
-#ifndef __BOARD_H
-#define __BOARD_H
+#ifndef BOARD_H
+#define BOARD_H
 
 #include "defs.h"
 
@@ -13,19 +13,14 @@ typedef enum BlockType {
 
 typedef struct Board {
     BlockType cell[BOARD_HEIGHT][BOARD_WIDTH];
-    int score;
-    int lines_cleared;
-    int fall_delay;
-    int level;
 } Board;
 
 
-Board* init_board();
-bool has_block(Board* b, int y, int x);
-void render_board(Renderer* rend, Board* b); 
-void store_tetromino(Board* b, Tetromino* t);
-bool check_lines(Board* b);
-void clear_line(Board* b, int y);
-void update_fall_delay(Board* b);
+Board* board_init();
+bool board_has_block(Board* b, int y, int x);
+void board_render(Renderer* rend, Board* b); 
+void board_store_tetromino(Board* b, Tetromino* t);
+int board_check_lines(Board* b);
+void board_clear_line(Board* b, int y);
 
-#endif //__BOARD_H
+#endif

@@ -6,9 +6,7 @@
 #include "defs.h"
 #include "render.h"
 #include "board.h"
-
-int bag[7] = { 0, 1, 2, 3, 4, 5, 6 };
-int pulls = 0;
+#include "game.h"
 
 /* Shapes and their rotations.
  * shapes[][] 2D array holds 7 tetrominos, each with 4 rotations.
@@ -48,8 +46,8 @@ int start_offset[7][2] = {
  * (y,x) - position to create the piece in; 0,0 to spawn on the board,
  * above BOARD_WIDTH to spawn on the side as a "next" piece.
  */
-Tetromino* create_tetromino(int y, int x) {
-    int rand_shape = pull_from_bag();
+Tetromino* tetromino_create(Game* g, int y, int x) {
+    int rand_shape = game_pull_from_bag(g);
     Tetromino* t = malloc(sizeof(Tetromino));
 
     t->shape = rand_shape;
@@ -60,31 +58,13 @@ Tetromino* create_tetromino(int y, int x) {
     return t;
 }
 
-void shuffle_bag() {
-    pulls = 0;
-    for (int i = 6; i > 0; i--) {
-        int j = rand() % 7;
-        int buf = bag[j];
-        bag[j] = bag[i];
-        bag[i] = buf;
-    }
-}
-
-int pull_from_bag() {
-    pulls++;
-    if (pulls > 6) {
-        shuffle_bag();
-    }
-    return bag[pulls];
-}
-
-void move_to_spawn(Tetromino* t) {
+void tetromino_move_to_spawn(Tetromino* t) {
     t->y = start_offset[t->shape][0];
     t->x = start_offset[t->shape][1];
 }
 
 /* Return true if a space in the 4x4 shape matrix is an empty (0) bit. */
-bool is_empty(Tetromino* t, int row, int col) {
+bool tetromino_bit_is_empty(Tetromino* t, int row, int col) {
     int shift = col + row * 4;
     int bit = 0x8000; // 1000 0000 0000 0000
                       // shift it to the right by `shift` bits to check
@@ -93,11 +73,11 @@ bool is_empty(Tetromino* t, int row, int col) {
 }
 
 /* Draw the given tetromino. */
-void render_tetromino (Renderer* rend, Tetromino *t) {
+void tetromino_render(Renderer* rend, Tetromino *t) {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            if (!is_empty(t, y, x)) {
-                draw_block(rend, t->y + y, t->x + x, COLOR_WHITE);
+            if (!tetromino_bit_is_empty(t, y, x)) {
+                render_block(rend, t->y + y, t->x + x, COLOR_WHITE);
             }
         }
     }
@@ -108,7 +88,7 @@ void render_tetromino (Renderer* rend, Tetromino *t) {
  * TODO: add wall kicks (check if we can rotate the piece by moving it one
  * cell to the side)
  */
-bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
+bool tetromino_can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
     // Save current rotation in case the checks fail.
     int old_rot = t->rotation;
     if (next_rot) {
@@ -117,13 +97,13 @@ bool can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) {
 
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
-            if (!(is_empty(t, y, x)) 
+            if (!(tetromino_bit_is_empty(t, y, x)) 
                 && (t->x + x + dest_x < 0 
                     || t->x + x + dest_x > BOARD_WIDTH - 1 
                     || t->y + y + dest_y > BOARD_HEIGHT - 1)) {
                 goto cant_move;
             }
-            if ((!(is_empty(t, y, x)) && has_block(b, t->y + y + dest_y, t->x + x + dest_x))) {
+            if ((!(tetromino_bit_is_empty(t, y, x)) && board_has_block(b, t->y + y + dest_y, t->x + x + dest_x))) {
                 goto cant_move;
             }
         }

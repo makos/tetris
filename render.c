@@ -1,12 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-//#include <SDL3/SDL.h>
 
 #include "render.h"
 #include "defs.h"
 
-void init_renderer(Renderer* r) {
+Renderer* render_init() {
     SDL_Init(SDL_INIT_EVERYTHING);
+    Renderer* r = malloc(sizeof(Renderer));
+
     r->w = SDL_CreateWindow("Tetris",
                          SDL_WINDOWPOS_CENTERED,
                          SDL_WINDOWPOS_CENTERED,
@@ -28,9 +29,11 @@ void init_renderer(Renderer* r) {
     if (!r->font) {
         printf("Error opening font: %s\n", TTF_GetError());
     }
+
+    return r;
 }
 
-SDL_Rect get_block_rect(int y, int x) {
+SDL_Rect render_get_block_rect(int y, int x) {
     SDL_Rect r;
 
     r.y = y * BLOCK_HEIGHT;
@@ -41,17 +44,20 @@ SDL_Rect get_block_rect(int y, int x) {
     return r;
 }
 
-void draw_block(Renderer *r, int y, int x, int color) {
-    SDL_Rect rect = get_block_rect(y, x);
+void render_block(Renderer *r, int y, int x, int color) {
+    SDL_Rect rect = render_get_block_rect(y, x);
     SDL_FillRect(r->w_surf, &rect, color);
 }
 
-void draw_border(Renderer* r) {
+void render_draw_border(Renderer *r) {
+
 }
 
-void shutdown_renderer(Renderer* r) { 
+void render_shutdown(Renderer* r) { 
     TTF_CloseFont(r->font);
     TTF_Quit();
+
+    SDL_FreeSurface(r->w_surf);
 
     SDL_DestroyWindow(r->w);
     r->w = NULL;
@@ -59,15 +65,15 @@ void shutdown_renderer(Renderer* r) {
     SDL_Quit();   
 }
 
-void clear_screen(Renderer* r) {
+void render_clear_screen(Renderer* r) {
     SDL_FillRect(r->w_surf, NULL, COLOR_BLACK);
 }
 
-void update_screen(Renderer* r) {
+void render_update_screen(Renderer* r) {
     SDL_UpdateWindowSurface(r->w);
 }
 
-void draw_text(Renderer* r, int y, int x, char* text) {
+void render_text(Renderer* r, int y, int x, char* text) {
     SDL_Surface* surf_text;
     SDL_Color white = {255, 255, 255, 255};
 
@@ -81,4 +87,31 @@ void draw_text(Renderer* r, int y, int x, char* text) {
     SDL_BlitSurface(surf_text, NULL, r->w_surf, &dest_rect);
 
     SDL_FreeSurface(surf_text);
+}
+
+void render_start_frame(Renderer* r) {
+    r->frame_start_ms = SDL_GetTicks64();
+}
+
+unsigned long render_update_delta(Renderer* r) {
+    r->frame_end_ms = SDL_GetTicks64();
+    return r->frame_end_ms - r->frame_start_ms;
+}
+
+void render_delay(Renderer* r) {
+    render_update_delta(r);
+    unsigned long delay = (r->frame_start_ms + 17) - r->frame_end_ms;
+    if (delay > 0) {
+        SDL_Delay(delay);
+    }
+}
+
+void render_update_fps(Renderer* r) {
+    r->frame_end_ms = SDL_GetTicks64();
+    r->fps = 1000.0 / (r->frame_end_ms - r->frame_start_ms);
+    sprintf(r->framerate_text, "%.0f", r->fps);
+}
+
+unsigned long render_get_ticks() {
+    return SDL_GetTicks64();
 }
