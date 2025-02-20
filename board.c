@@ -62,8 +62,6 @@ int board_check_lines(Board* b) {
             if (x == BOARD_WIDTH - 1) {
                 board_clear_line(b, y);
                 lines++;
-                //b->score += 100 * b->level;
-                //b->lines_cleared++;
             }
         }
     }
