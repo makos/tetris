@@ -9,14 +9,13 @@
 #include "render.h"
 
 /* TODO:
+ * - "animations" i.e. line clearing effects (for example a simple alpha lerp)
  * - better scoring (multipliers)
  * - restarting the game
  * - hard drop
  * - wall kicks
  * - menu
  * - update to SDL3?
- * - refactor the mess
- * - being able to move the block while rotating - SDL GetKeyboardState or sth
  * - add "timer" header and implement separate timers (for falling, FPS etc.)
  */
 int main() {
@@ -62,8 +61,7 @@ int main() {
 
     //TODO: hack, implement pausing and restarting the game.
     //SDL_Delay(2000);
-    //printf("\nFinal score: %d\nLevel: %d\n", game_board->score, game_board->level);
-    //shutdown_renderer(&renderer);
+    printf("\nFinal score: %d\nLevel: %d\n", game->score, game->level);
     game_shutdown(game);
     return 0;
 }
