@@ -8,6 +8,16 @@
 #include "board.h"
 #include "game.h"
 
+unsigned long colors[7] = {
+    0xef7921, // L
+    0x31c7ef, // I
+    0xf7d308, // O
+    0x5a65ad, // J
+    0x42b642, // S
+    0xef2029, // Z
+    0xad4d9c  // T
+};
+
 /* Shapes and their rotations.
  * shapes[][] 2D array holds 7 tetrominos, each with 4 rotations.
  * They are encoded as a 3x4 matrix, each hex digit corresponds to one row
@@ -54,6 +64,7 @@ Tetromino* tetromino_create(Game* g, int y, int x) {
     t->rotation = 0;
     t->y = y + start_offset[t->shape][0];
     t->x = x + start_offset[t->shape][1];
+    t->color = colors[t->shape];
 
     return t;
 }
@@ -77,7 +88,7 @@ void tetromino_render(Renderer* rend, Tetromino *t) {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
             if (!tetromino_bit_is_empty(t, y, x)) {
-                render_block(rend, t->y + y, t->x + x, COLOR_WHITE);
+                render_block(rend, t->y + y, t->x + x, t->color);
             }
         }
     }

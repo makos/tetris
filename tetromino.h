@@ -10,6 +10,7 @@ typedef struct Tetromino {
     int rotation; // in range 0..3
     int x;
     int y;
+    unsigned long color;
 } Tetromino;
 
 Tetromino* tetromino_create(Game* g, int y, int x);

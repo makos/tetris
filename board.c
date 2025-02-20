@@ -13,7 +13,8 @@ Board* board_init() {
 
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            b->cell[y][x] = BLOCK_EMPTY;
+            b->cell[y][x].type = BLOCK_EMPTY;
+            b->cell[y][x].color = COLOR_BLACK;
         }
     }
     return b;
@@ -24,7 +25,8 @@ void board_store_tetromino(Board* b, Tetromino* t) {
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
             if (!tetromino_bit_is_empty(t, y, x)) {
-                b->cell[t->y + y][t->x + x] = BLOCK_FULL;
+                b->cell[t->y + y][t->x + x].type = BLOCK_FULL;
+                b->cell[t->y + y][t->x + x].color = t->color;
             }
         }
     }
@@ -37,7 +39,7 @@ bool board_has_block(Board* b, int y, int x) {
     if (y < 0 || x < 0 || y > BOARD_HEIGHT - 1 || x > BOARD_WIDTH - 1)
         return false;
 
-    if (b->cell[y][x] == BLOCK_EMPTY)
+    if (b->cell[y][x].type == BLOCK_EMPTY)
         return false;
     else
         return true;
@@ -81,11 +83,11 @@ void board_clear_line(Board* b, int y) {
 void board_render(Renderer* rend, Board* b) {
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            switch (b->cell[y][x]) {
+            switch (b->cell[y][x].type) {
                 case BLOCK_EMPTY:
                     break;
                 case BLOCK_FULL:
-                    render_block(rend, y, x, COLOR_RED);
+                    render_block(rend, y, x, b->cell[y][x].color);
                     break;
             }
         }

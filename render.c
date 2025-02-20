@@ -57,8 +57,6 @@ void render_shutdown(Renderer* r) {
     TTF_CloseFont(r->font);
     TTF_Quit();
 
-    SDL_FreeSurface(r->w_surf);
-
     SDL_DestroyWindow(r->w);
     r->w = NULL;
     r->w_surf = NULL;

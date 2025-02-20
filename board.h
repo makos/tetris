@@ -6,13 +6,15 @@
 typedef struct Renderer Renderer;
 typedef struct Tetromino Tetromino;
 
-typedef enum BlockType {
-    BLOCK_EMPTY,
-    BLOCK_FULL
-} BlockType;
+typedef enum BlockType { BLOCK_EMPTY, BLOCK_FULL } BlockType;
+
+typedef struct Cell {
+    BlockType type;
+    unsigned long color;
+} Cell;
 
 typedef struct Board {
-    BlockType cell[BOARD_HEIGHT][BOARD_WIDTH];
+    Cell cell[BOARD_HEIGHT][BOARD_WIDTH];
 } Board;
 
 

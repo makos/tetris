@@ -9,7 +9,6 @@
 #include "render.h"
 
 /* TODO:
- * - blocks with various colors
  * - better scoring (multipliers)
  * - restarting the game
  * - hard drop
