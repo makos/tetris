@@ -30,5 +30,6 @@ unsigned long render_update_delta(Renderer* r);
 void render_update_fps(Renderer* r);
 void render_delay(Renderer* r);
 unsigned long render_get_ticks();
+void render_grid(Renderer* r);
 
 #endif

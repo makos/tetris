@@ -91,10 +91,11 @@ void render_block(Renderer *rend, int y, int x, int color) {
     Uint32 color_dim = SDL_MapRGB(rend->w_surf->format, r2, g2, b2);
 
     SDL_Rect rect = render_get_block_rect(y, x);
-    SDL_Rect bl = {rect.x, rect.y, 5, rect.h};
-    SDL_Rect bu = {rect.x, rect.y, rect.w, 5};
-    SDL_Rect br = {rect.x + rect.w - 5, rect.y, 5, rect.h};
-    SDL_Rect bd = {rect.x, rect.y + rect.h - 5, rect.w, 5};
+    // Borders - "shadows" on the outside of block.
+    SDL_Rect bl = {rect.x, rect.y, 5, rect.h}; // border left
+    SDL_Rect bu = {rect.x, rect.y, rect.w, 5}; // border up
+    SDL_Rect br = {rect.x + rect.w - 5, rect.y, 5, rect.h}; // border right
+    SDL_Rect bd = {rect.x, rect.y + rect.h - 5, rect.w, 5}; // border down
     SDL_FillRect(rend->w_surf, &rect, color);
     SDL_FillRect(rend->w_surf, &bl, color_light);
     SDL_FillRect(rend->w_surf, &bu, color_light);
@@ -118,6 +119,22 @@ void render_clear_screen(Renderer* r) {
 
 void render_update_screen(Renderer* r) {
     SDL_UpdateWindowSurface(r->w);
+}
+
+void render_grid(Renderer *r) {
+    Uint32 grid_color = 0x101010;
+    SDL_Rect vline = {0, 0, 1, SCREEN_HEIGHT};
+    SDL_Rect hline = {0, 0, SCREEN_WIDTH - (BLOCK_WIDTH * 5), 1};
+
+    for (int y = 0; y < BOARD_HEIGHT; y++) {
+        SDL_FillRect(r->w_surf, &hline, grid_color);
+        hline.y += BLOCK_HEIGHT;
+    }
+
+    for (int x = 0; x < BOARD_WIDTH; x++) {
+        SDL_FillRect(r->w_surf, &vline, grid_color);
+        vline.x += BLOCK_WIDTH;
+    }
 }
 
 void render_text(Renderer* r, int y, int x, char* text) {
