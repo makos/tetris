@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "tetromino.h"
 #include "board.h"
@@ -82,21 +83,29 @@ int board_check_lines(Board* b) {
 
 void board_clear_lines(Board* b) {
     int from_line = -1;
+    int lines = 0;
+    // Double buffer
+    Board* copy = malloc(sizeof(Board));
+    memcpy(copy, b, sizeof(Board));
+
     for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
-        for (int x = 0; x < BOARD_WIDTH; x++) {
-            if (b->cell[y][x].to_clear) {
-                if (from_line == -1) {
-                    from_line = y;
-                }
+        if (b->cell[y][0].to_clear) {
+            lines++;
+            if (from_line == -1) {
+                from_line = y;
             }
         }
     }
 
     for (; from_line > 0; from_line--) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            b->cell[from_line][x] = b->cell[from_line-1][x];
+            if (from_line - lines < 0)
+                lines = 1;
+            b->cell[from_line][x] = b->cell[from_line-lines][x];
         }
     }
+
+    free(copy);
 }
 
 /* Render blocks saved on the board.
