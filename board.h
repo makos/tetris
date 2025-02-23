@@ -13,6 +13,7 @@ typedef struct Cell {
     BlockType type;
     unsigned long color;
     int to_clear;
+    int show;
 } Cell;
 
 typedef struct Board {

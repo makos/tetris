@@ -20,6 +20,7 @@ Board* board_init() {
             b->cell[y][x].type = BLOCK_EMPTY;
             b->cell[y][x].color = COLOR_BLACK;
             b->cell[y][x].to_clear = false;
+            b->cell[y][x].show = false;
         }
     }
 
@@ -33,6 +34,7 @@ void board_store_tetromino(Board* b, Tetromino* t) {
             if (!tetromino_bit_is_empty(t, y, x)) {
                 b->cell[t->y + y][t->x + x].type = BLOCK_FULL;
                 b->cell[t->y + y][t->x + x].color = t->color;
+                b->cell[t->y + y][t->x + x].show = true;
             }
         }
     }
@@ -102,12 +104,8 @@ void board_clear_lines(Board* b) {
 void board_render(Renderer* rend, Board* b) {
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            switch (b->cell[y][x].type) {
-                case BLOCK_EMPTY:
-                    break;
-                case BLOCK_FULL:
-                    render_block(rend, y, x, b->cell[y][x].color);
-                    break;
+            if (b->cell[y][x].show) {
+                render_block(rend, y, x, b->cell[y][x].color);
             }
         }
     }
@@ -120,10 +118,10 @@ void board_update(Board* b, Game* g) {
         if (blink_frames++ > 10) {
             for (int y = 0; y < BOARD_HEIGHT; y++) {
                 for (int x = 0; x < BOARD_WIDTH; x++) {
-                    if (b->cell[y][x].to_clear && b->cell[y][x].type == BLOCK_FULL)
-                        b->cell[y][x].type = BLOCK_EMPTY;
-                    else if (b->cell[y][x].to_clear && b->cell[y][x].type == BLOCK_EMPTY)
-                        b->cell[y][x].type = BLOCK_FULL;
+                    if (b->cell[y][x].to_clear && b->cell[y][x].show)
+                        b->cell[y][x].show = false;
+                    else if (b->cell[y][x].to_clear && !b->cell[y][x].show)
+                        b->cell[y][x].show = true;
                 }
             }
             times_to_blink--;
@@ -139,6 +137,6 @@ void board_update(Board* b, Game* g) {
     else if (lines > 0) {
         g->score += 100 * lines * g->level;
         g->lines_cleared++;
-        times_to_blink = 5;
+        times_to_blink = 4;
     }
 }
