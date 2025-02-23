@@ -120,14 +120,7 @@ void game_update(Game* g) {
         g->last_block_tick_time = g->renderer->frame_start_ms;
     }
 
-    int lines = board_check_lines(g->board);
-
-    if (lines == -1)
-        g->running = false;
-    else if (lines > 0) {
-        g->score += 100 * g->level;
-        g->lines_cleared++;
-    }
+    board_update(g->board, g);
 
     //falltime = (0.8 - ((level-1) * 0.007)) ^ (level-1) [in seconds]
     if (g->lines_cleared % 10 == 0) {

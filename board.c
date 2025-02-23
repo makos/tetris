@@ -5,6 +5,10 @@
 #include "board.h"
 #include "render.h"
 #include "defs.h"
+#include "game.h"
+
+static int blink_frames = 0;
+static int times_to_blink = 0;
 
 /* Initialize the board to all empty spaces.
  */
@@ -15,8 +19,10 @@ Board* board_init() {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             b->cell[y][x].type = BLOCK_EMPTY;
             b->cell[y][x].color = COLOR_BLACK;
+            b->cell[y][x].to_clear = false;
         }
     }
+
     return b;
 }
 
@@ -44,6 +50,7 @@ bool board_has_block(Board* b, int y, int x) {
     else
         return true;
 }
+
 /* Check if any lines need deleting (full), or if blocks reached the top of the
  * screen - which means game over. Returns number of lines cleared, or -1 if
  * blocks reached top of screen - meaning game over.
@@ -54,13 +61,16 @@ int board_check_lines(Board* b) {
             return -1; // GAME OVER
     }
     int lines = 0;
-    // Check bottom to top, left to right
+    // Check bottom to top, left to right.
     for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             if (!board_has_block(b, y, x))
                 break;
             if (x == BOARD_WIDTH - 1) {
-                board_clear_line(b, y);
+                // Traverse the row again.
+                for (int x2 = 0; x2 < BOARD_WIDTH; x2++) {
+                    b->cell[y][x2].to_clear = true;
+                }
                 lines++;
             }
         }
@@ -68,10 +78,21 @@ int board_check_lines(Board* b) {
     return lines;
 }
 
-void board_clear_line(Board* b, int y) {
-    for (; y > 0; y--) {
+void board_clear_lines(Board* b) {
+    int from_line = -1;
+    for (int y = BOARD_HEIGHT - 1; y >= 0; y--) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
-            b->cell[y][x] = b->cell[y-1][x];
+            if (b->cell[y][x].to_clear) {
+                if (from_line == -1) {
+                    from_line = y;
+                }
+            }
+        }
+    }
+
+    for (; from_line > 0; from_line--) {
+        for (int x = 0; x < BOARD_WIDTH; x++) {
+            b->cell[from_line][x] = b->cell[from_line-1][x];
         }
     }
 }
@@ -89,5 +110,38 @@ void board_render(Renderer* rend, Board* b) {
                     break;
             }
         }
+    }
+}
+
+void board_update(Board* b, Game* g) {
+    int lines = 0;
+    if (times_to_blink == 0) {
+        lines = board_check_lines(g->board);
+    }
+
+    if (lines == -1)
+        g->running = false;
+    else if (lines > 0) {
+        g->score += 100 * lines * g->level;
+        g->lines_cleared++;
+        times_to_blink = 3;
+    }
+
+    // Animate blinking when clearing lines.
+    if (times_to_blink > 0) {
+        if (blink_frames++ > 10) {
+            for (int y = 0; y < BOARD_HEIGHT; y++) {
+                for (int x = 0; x < BOARD_WIDTH; x++) {
+                    if (b->cell[y][x].to_clear && b->cell[y][x].type == BLOCK_FULL)
+                        b->cell[y][x].type = BLOCK_EMPTY;
+                    else if (b->cell[y][x].to_clear && b->cell[y][x].type == BLOCK_EMPTY)
+                        b->cell[y][x].type = BLOCK_FULL;
+                }
+            }
+            times_to_blink--;
+            blink_frames = 0;
+        }
+    } else if (times_to_blink == 0) {
+        board_clear_lines(b);
     }
 }
