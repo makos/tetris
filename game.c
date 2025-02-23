@@ -70,6 +70,7 @@ void game_render(Game* g) {
     sprintf(g->renderer->score_text, "%d", g->score);
 
     render_clear_screen(g->renderer);
+    render_grid(g->renderer);
     board_render(g->renderer, g->board);
     tetromino_render(g->renderer, g->current);
     tetromino_render(g->renderer, g->next);
