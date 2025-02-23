@@ -115,18 +115,6 @@ void board_render(Renderer* rend, Board* b) {
 
 void board_update(Board* b, Game* g) {
     int lines = 0;
-    if (times_to_blink == 0) {
-        lines = board_check_lines(g->board);
-    }
-
-    if (lines == -1)
-        g->running = false;
-    else if (lines > 0) {
-        g->score += 100 * lines * g->level;
-        g->lines_cleared++;
-        times_to_blink = 3;
-    }
-
     // Animate blinking when clearing lines.
     if (times_to_blink > 0) {
         if (blink_frames++ > 10) {
@@ -141,7 +129,16 @@ void board_update(Board* b, Game* g) {
             times_to_blink--;
             blink_frames = 0;
         }
-    } else if (times_to_blink == 0) {
+    } else {
         board_clear_lines(b);
+        lines = board_check_lines(b);
+    }
+
+    if (lines == -1)
+        g->running = false;
+    else if (lines > 0) {
+        g->score += 100 * lines * g->level;
+        g->lines_cleared++;
+        times_to_blink = 5;
     }
 }

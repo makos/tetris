@@ -75,6 +75,7 @@ void game_render(Game* g) {
     tetromino_render(g->renderer, g->next);
     render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, g->renderer->score_text);
     render_text(g->renderer, 5, 5, g->renderer->framerate_text);
+    render_border(g->renderer);
     render_update_screen(g->renderer);
 }
 

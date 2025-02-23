@@ -9,28 +9,23 @@
 #include "render.h"
 
 /* TODO:
- * - "animations" i.e. line clearing effects (for example a simple alpha lerp)
- *   - add a flag "clearing_line" and set it when it's time to animate
- *   - stop all updating (falling, timers) when it's going on (freeze the game)
- *   - gradually change alpha of the line(s)
- *   - after 100 ms or something unpause
  * - better scoring (multipliers)
+ * - sound (music and SFX)
  * - restarting the game
  * - hard drop
  * - wall kicks
  * - menu
  * - update to SDL3?
- * - add "timer" header and implement separate timers (for falling, FPS etc.)
  */
 int main() {
     srand(time(NULL));
     Game* game = game_init();
     SDL_Event e;
-    const Uint8* keys = SDL_GetKeyboardState(NULL);
     render_update_fps(game->renderer);
 
     while (game->running) {
         render_start_frame(game->renderer);
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
 
         // SDL handling first
         while (SDL_PollEvent(&e) != 0) {

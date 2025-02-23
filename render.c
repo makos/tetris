@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -44,13 +46,60 @@ SDL_Rect render_get_block_rect(int y, int x) {
     return r;
 }
 
-void render_block(Renderer *r, int y, int x, int color) {
-    SDL_Rect rect = render_get_block_rect(y, x);
-    SDL_FillRect(r->w_surf, &rect, color);
+void render_border(Renderer* r) {
+    SDL_Rect border = {10 * BLOCK_WIDTH, 0, 5, SCREEN_HEIGHT};
+    SDL_FillRect(r->w_surf, &border, COLOR_BLUE);
 }
 
-void render_draw_border(Renderer *r) {
+double clamp(double d, double min, double max) { 
+    const double t = d < min ? min : d;
+    return t > max ? max : t;
+}
 
+void render_block(Renderer *rend, int y, int x, int color) {
+    // Convert hex value to RGB, find max, add or substract from other colors,
+    // convert again into hex. r,g,b are lighter colors, r2,g2,b2 are darker
+    // used for shadows.
+    Uint8 r, g, b;
+    Uint8 r2, g2, b2;
+    double maxval;
+
+    SDL_GetRGB(color, rend->w_surf->format, &r, &g, &b);
+    maxval = fmax(fmax(r, g), b);
+
+    if (maxval == r) {
+        r2 = r;
+        g2 = clamp(g - 16, 0, 255);
+        b2 = clamp(b - 16, 0, 255);
+        g = clamp(g + 16, 0, 255);
+        b = clamp(b + 16, 0, 255);
+    } else if (maxval == g) {
+        g2 = g;
+        r2 = clamp(r - 16, 0, 255);
+        b2 = clamp(b - 16, 0, 255);
+        r = clamp(r + 16, 0, 255);
+        b = clamp(b + 16, 0, 255);
+    } else {
+        b2 = b;
+        r2 = clamp(r - 16, 0, 255);
+        g2 = clamp(g - 16, 0, 255);
+        r = clamp(r + 16, 0, 255);
+        g = clamp(g + 16, 0, 255);
+    }
+
+    Uint32 color_light = SDL_MapRGB(rend->w_surf->format, r, g, b);
+    Uint32 color_dim = SDL_MapRGB(rend->w_surf->format, r2, g2, b2);
+
+    SDL_Rect rect = render_get_block_rect(y, x);
+    SDL_Rect bl = {rect.x, rect.y, 5, rect.h};
+    SDL_Rect bu = {rect.x, rect.y, rect.w, 5};
+    SDL_Rect br = {rect.x + rect.w - 5, rect.y, 5, rect.h};
+    SDL_Rect bd = {rect.x, rect.y + rect.h - 5, rect.w, 5};
+    SDL_FillRect(rend->w_surf, &rect, color);
+    SDL_FillRect(rend->w_surf, &bl, color_light);
+    SDL_FillRect(rend->w_surf, &bu, color_light);
+    SDL_FillRect(rend->w_surf, &br, color_dim);
+    SDL_FillRect(rend->w_surf, &bd, color_dim);
 }
 
 void render_shutdown(Renderer* r) { 

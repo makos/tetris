@@ -15,5 +15,6 @@
 #define COLOR_WHITE 0xffffffff
 #define COLOR_BLACK 0xff000000
 #define COLOR_RED   0xffff0000
+#define COLOR_BLUE  0x0180ff
 
 #endif //__DEFS_H

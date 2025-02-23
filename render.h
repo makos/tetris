@@ -24,7 +24,7 @@ void render_block(Renderer* r, int y, int x, int color);
 void render_clear_screen(Renderer* r);
 void render_update_screen(Renderer* r);
 void render_text(Renderer* r, int y, int x, char* text);
-void render_draw_border(Renderer *r);
+void render_border(Renderer *r);
 void render_start_frame(Renderer* r);
 unsigned long render_update_delta(Renderer* r);
 void render_update_fps(Renderer* r);
