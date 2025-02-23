@@ -10,6 +10,10 @@
 
 /* TODO:
  * - "animations" i.e. line clearing effects (for example a simple alpha lerp)
+ *   - add a flag "clearing_line" and set it when it's time to animate
+ *   - stop all updating (falling, timers) when it's going on (freeze the game)
+ *   - gradually change alpha of the line(s)
+ *   - after 100 ms or something unpause
  * - better scoring (multipliers)
  * - restarting the game
  * - hard drop
