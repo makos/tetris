@@ -27,14 +27,15 @@ Game* game_init() {
     g->pulls = 0;
     g->running = true;
     g->levelled_up = true;
-    g->rotated = false;
     g->score = 0;
     g->lines_cleared = 0;
     g->level = 1;
     g->last_block_tick_time = 0;
-    g->rotated_time = 0;
 
-    game_clear_action_frames(g);
+    for (int i = 0; i < MAX_ACTIONS; i++) {
+        g->action[i] = 0;
+        g->action_frames[i] = 0;
+    }
 
     game_update_fall_delay(g);
 
@@ -84,7 +85,7 @@ void game_render(Game* g) {
 
 void game_handle_input(Game* g) {
     for (int i = 0; i < MAX_ACTIONS; i++) {
-        if (g->action[i]) {
+        if (g->action[i] == 1) {
             switch (i) {
                 case ACTION_LEFT:
                     if (tetromino_can_move_to(g->current, g->board, 0, -1, 0))
@@ -101,11 +102,14 @@ void game_handle_input(Game* g) {
                         game_store_tetromino(g);
                     break;
                 case ACTION_ROTATE:
-                    g->rotated = true;
-                    //TODO timers:
-                    g->rotated_time = render_get_ticks();
                     if (tetromino_can_move_to(g->current, g->board, 0, 0, 1))
                         g->current->rotation = (g->current->rotation + 1) % 4;
+                    break;
+                case ACTION_HARDDROP:
+                    while (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) {
+                        g->current->y += 1;
+                    }
+                    game_store_tetromino(g);
                     break;
             }
         }
@@ -138,10 +142,6 @@ void game_update(Game* g) {
         g->levelled_up = true;
     } else {
         g->levelled_up = false;
-    }
-
-    if (g->renderer->frame_start_ms - g->rotated_time > 80) {
-        g->rotated = false;
     }
 }
 
@@ -176,12 +176,13 @@ void game_handle_action(Game* g, int action) {
         case ACTION_RIGHT:
         case ACTION_DOWN:
             if (g->action_frames[action] == 1 ||
-                    (g->action_frames[action] > 20 &&
+                    (g->action_frames[action] > 10 &&
                      g->action_frames[action] % 3 == 0)) {
                 g->action[action] = 1;
             }
             break;
         case ACTION_ROTATE:
+        case ACTION_HARDDROP:
             if (g->action_frames[action] == 1) {
                 g->action[action] = 1;
             }

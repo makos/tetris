@@ -12,7 +12,6 @@
  * - better scoring (multipliers)
  * - sound (music and SFX)
  * - restarting the game
- * - hard drop
  * - wall kicks
  * - menu
  * - update to SDL3?
@@ -58,6 +57,9 @@ int main() {
         }
         if (keys[SDL_SCANCODE_Z]) {
             game_handle_action(game, ACTION_ROTATE);
+        }
+        if (keys[SDL_SCANCODE_SPACE]) {
+            game_handle_action(game, ACTION_HARDDROP);
         }
 
         game_handle_input(game);
