@@ -18,6 +18,7 @@ typedef struct Game {
 
     int bag[MAX_TETROMINOS];
     int action[MAX_ACTIONS];
+    int action_frames[MAX_ACTIONS];
     int pulls;
     bool running;
     bool levelled_up;
@@ -39,5 +40,7 @@ void game_update(Game* g);
 void game_shuffle_bag(Game* g);
 void game_handle_input(Game* g);
 int game_pull_from_bag(Game* g);
+void game_handle_action(Game* g, int action);
+void game_clear_action_frames(Game* g);
 
 #endif

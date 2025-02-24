@@ -28,29 +28,38 @@ int main() {
 
     while (game->running) {
         render_start_frame(game->renderer);
-        const Uint8* keys = SDL_GetKeyboardState(NULL);
 
         // SDL handling first
         while (SDL_PollEvent(&e) != 0) {
-            if (e.type == SDL_QUIT) {
-                game->running = false;
-            }
-            if (keys[SDL_SCANCODE_ESCAPE]) {
-                game->running = false;
-            }
-            if (keys[SDL_SCANCODE_LEFT]) {
-                game->action[ACTION_LEFT] = 1;
-            }
-            if (keys[SDL_SCANCODE_RIGHT]) {
-                game->action[ACTION_RIGHT] = 1;
-            }
-            if (keys[SDL_SCANCODE_DOWN]) {
-                game->action[ACTION_DOWN] = 1;
-            }
-            if (keys[SDL_SCANCODE_Z] && !game->rotated && !e.key.repeat) {
-                game->action[ACTION_ROTATE] = 1;
+            switch (e.type) {
+                case SDL_QUIT:
+                    game->running = false;
+                    break;
+                case SDL_KEYUP:
+                    game_clear_action_frames(game);
+                    break;
             }
         }
+
+        const Uint8* keys = SDL_GetKeyboardState(NULL);
+
+        if (keys[SDL_SCANCODE_ESCAPE]) {
+            game->running = false;
+            break;
+        }
+        if (keys[SDL_SCANCODE_LEFT]) {
+            game_handle_action(game, ACTION_LEFT);
+        }
+        if (keys[SDL_SCANCODE_RIGHT]) {
+            game_handle_action(game, ACTION_RIGHT);
+        }
+        if (keys[SDL_SCANCODE_DOWN]) {
+            game_handle_action(game, ACTION_DOWN);
+        }
+        if (keys[SDL_SCANCODE_Z]) {
+            game_handle_action(game, ACTION_ROTATE);
+        }
+
         game_handle_input(game);
 
         game_update(game);

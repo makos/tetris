@@ -34,6 +34,8 @@ Game* game_init() {
     g->last_block_tick_time = 0;
     g->rotated_time = 0;
 
+    game_clear_action_frames(g);
+
     game_update_fall_delay(g);
 
     game_shuffle_bag(g);
@@ -159,4 +161,30 @@ int game_pull_from_bag(Game* g) {
         game_shuffle_bag(g);
     }
     return g->bag[g->pulls];
+}
+
+void game_clear_action_frames(Game* g) {
+    for (int i = 0; i < MAX_ACTIONS; i++) {
+        g->action_frames[i] = 0;
+    }
+}
+
+void game_handle_action(Game* g, int action) {
+    g->action_frames[action]++;
+    switch (action) {
+        case ACTION_LEFT:
+        case ACTION_RIGHT:
+        case ACTION_DOWN:
+            if (g->action_frames[action] == 1 ||
+                    (g->action_frames[action] > 20 &&
+                     g->action_frames[action] % 3 == 0)) {
+                g->action[action] = 1;
+            }
+            break;
+        case ACTION_ROTATE:
+            if (g->action_frames[action] == 1) {
+                g->action[action] = 1;
+            }
+            break;
+    }
 }
