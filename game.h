@@ -26,7 +26,7 @@ typedef struct Game {
     int lines_cleared;
     int fall_delay;
     int level;
-    unsigned long last_block_tick_time;
+    unsigned int block_frames;
 } Game;
 
 Game* game_init();

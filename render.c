@@ -164,7 +164,7 @@ unsigned long render_update_delta(Renderer* r) {
 
 void render_delay(Renderer* r) {
     render_update_delta(r);
-    unsigned long delay = (r->frame_start_ms + 17) - r->frame_end_ms;
+    long delay = (r->frame_start_ms + 17) - r->frame_end_ms;
     if (delay > 0) {
         SDL_Delay(delay);
     }

@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "game.h"
 #include "render.h"
@@ -30,7 +31,7 @@ Game* game_init() {
     g->score = 0;
     g->lines_cleared = 0;
     g->level = 1;
-    g->last_block_tick_time = 0;
+    g->block_frames = 0;
 
     for (int i = 0; i < MAX_ACTIONS; i++) {
         g->action[i] = 0;
@@ -56,7 +57,10 @@ Game* game_init() {
 }
 
 void game_update_fall_delay(Game* g) {
+    // falltime = (0.8 - ((level-1) * 0.007)) ^ (level-1) [in seconds]
+    // we convert it to frames per second.
     double d = pow((0.8 - ((g->level - 1) * 0.007)), (g->level - 1)) * 1000;
+    d = d / 16.667;
     g->fall_delay = (int)d;
 }
 
@@ -70,14 +74,19 @@ void game_shutdown(Game* g) {
 }
 
 void game_render(Game* g) {
-    sprintf(g->renderer->score_text, "%d", g->score);
+    char buf[256];
+    memset(buf, 0, 256);
 
     render_clear_screen(g->renderer);
     render_grid(g->renderer);
     board_render(g->renderer, g->board);
     tetromino_render(g->renderer, g->current);
     tetromino_render(g->renderer, g->next);
-    render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, g->renderer->score_text);
+    sprintf(buf, "Score: %d", g->score);
+    render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, buf);
+    sprintf(buf, "Level: %d", g->level);
+    render_text(g->renderer, BLOCK_HEIGHT*6, BLOCK_WIDTH*11, buf);
+    // show FPS
     render_text(g->renderer, 5, 5, g->renderer->framerate_text);
     render_border(g->renderer);
     render_update_screen(g->renderer);
@@ -118,31 +127,27 @@ void game_handle_input(Game* g) {
 }
 
 void game_update(Game* g) {
-    /* Block falling - fall one cell every second. */
-    if (g->renderer->frame_start_ms- g->last_block_tick_time >= g->fall_delay) {
+    if (g->block_frames % g->fall_delay == 0) {
         if (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) 
             g->current->y += 1;
         else {
             game_store_tetromino(g);
         }
-        g->last_block_tick_time = g->renderer->frame_start_ms;
     }
 
     board_update(g->board, g);
 
-    //falltime = (0.8 - ((level-1) * 0.007)) ^ (level-1) [in seconds]
     if (g->lines_cleared % 10 == 0) {
         if (!g->levelled_up) {
-            printf("level old: %d\n", g->level);
             g->level++;
-            printf("level new: %d\n", g->level);
-            printf("lines cleared: %d\n", g->lines_cleared);
             game_update_fall_delay(g);
         }
         g->levelled_up = true;
     } else {
         g->levelled_up = false;
     }
+
+    g->block_frames++;
 }
 
 void game_shuffle_bag(Game* g) {

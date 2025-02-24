@@ -10,7 +10,6 @@ typedef struct Renderer {
     SDL_Window* w; // main game window
     SDL_Surface* w_surf;
     TTF_Font* font;
-    char score_text[256];
     char framerate_text[32];
     double fps;
     unsigned long frame_start_ms;
