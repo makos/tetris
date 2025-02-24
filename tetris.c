@@ -16,6 +16,9 @@
  * - wall kicks
  * - menu
  * - update to SDL3?
+ * BUG:
+ * - game over should be when there's no place to spawn; now it spawns a piece
+ *   and only after it gets stored it's game over
  */
 int main() {
     srand(time(NULL));
@@ -57,9 +60,6 @@ int main() {
         render_delay(game->renderer);
         render_update_fps(game->renderer);
     }
-
-    //TODO: hack, implement pausing and restarting the game.
-    //SDL_Delay(2000);
     printf("\nFinal score: %d\nLevel: %d\n", game->score, game->level);
     game_shutdown(game);
     return 0;
