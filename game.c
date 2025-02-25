@@ -21,6 +21,9 @@ Game* game_init() {
     Game* g = malloc(sizeof(Game));
 
     g->renderer = render_init();
+    if (!g->renderer) {
+        return NULL;
+    }
     g->board = board_init();
     g->current = NULL;
     g->next = NULL;
@@ -82,13 +85,16 @@ void game_render(Game* g) {
     board_render(g->renderer, g->board);
     tetromino_render(g->renderer, g->current);
     tetromino_render(g->renderer, g->next);
+    render_border(g->renderer);
+    // Score
     sprintf(buf, "Score: %d", g->score);
     render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, buf);
+    // Level
     sprintf(buf, "Level: %d", g->level);
     render_text(g->renderer, BLOCK_HEIGHT*6, BLOCK_WIDTH*11, buf);
-    // show FPS
-    render_text(g->renderer, 5, 5, g->renderer->framerate_text);
-    render_border(g->renderer);
+    // FPS
+    sprintf(buf, "%.2f", g->renderer->fps);
+    render_text(g->renderer, 5, 5, buf);
     render_update_screen(g->renderer);
 }
 

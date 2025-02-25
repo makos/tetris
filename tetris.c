@@ -22,6 +22,10 @@
 int main() {
     srand(time(NULL));
     Game* game = game_init();
+    if (!game) {
+        printf("Error!\n");
+        return -1;
+    }
     SDL_Event e;
     render_update_fps(game->renderer);
 
