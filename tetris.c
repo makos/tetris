@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_events.h>
 #include <time.h>
 
 #include "game.h"
@@ -14,10 +15,10 @@
  * - restarting the game
  * - wall kicks
  * - menu
- * - update to SDL3?
  * - ghost piece
  * - outline of stored blocks
  * - "lock" VFX (piece flashes)
+ * - grace period after locking the piece
  * BUG:
  * - game over should be when there's no place to spawn; now it spawns a piece
  *   and only after it gets stored it's game over
@@ -36,18 +37,18 @@ int main() {
         render_start_frame(game->renderer);
 
         // SDL handling first
-        while (SDL_PollEvent(&e) != 0) {
+        while (SDL_PollEvent(&e)) {
             switch (e.type) {
-                case SDL_QUIT:
+                case SDL_EVENT_QUIT:
                     game->running = false;
                     break;
-                case SDL_KEYUP:
+                case SDL_EVENT_KEY_UP:
                     game_clear_action_frames(game);
                     break;
             }
         }
 
-        const Uint8* keys = SDL_GetKeyboardState(NULL);
+        const bool* keys = SDL_GetKeyboardState(NULL);
 
         if (keys[SDL_SCANCODE_ESCAPE]) {
             game->running = false;

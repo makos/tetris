@@ -3,7 +3,7 @@
 
 typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Surface SDL_Surface;
-typedef struct SDL_Rect SDL_Rect;
+typedef struct SDL_FRect SDL_FRect;
 typedef struct TTF_Font TTF_Font;
 typedef struct SDL_Texture SDL_Texture;
 typedef struct SDL_Renderer SDL_Renderer;
@@ -20,7 +20,7 @@ typedef struct Renderer {
 } Renderer;
 
 Renderer* render_init();
-SDL_Rect render_get_block_rect(int y, int x);
+SDL_FRect render_get_block_rect(int y, int x);
 void render_shutdown(Renderer* r);
 void render_block(Renderer* r, int y, int x, int color);
 void render_clear_screen(Renderer* r);
