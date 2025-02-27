@@ -18,3 +18,6 @@ bool tetromino_bit_is_empty(Tetromino* t, int row, int col);
 void tetromino_move_to_spawn(Tetromino *t);
 void tetromino_render(Renderer *r, Tetromino *t);
 bool tetromino_can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot);
+int tetromino_get_rotation(Tetromino* t);
+void tetromino_rotate(Tetromino *t, int dir);
+void tetromino_move(Tetromino* t, int y, int x);

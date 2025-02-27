@@ -74,13 +74,22 @@ void tetromino_move_to_spawn(Tetromino* t) {
     t->x = start_offset[t->shape][1];
 }
 
+void tetromino_rotate(Tetromino* t, int dir) {
+    t->rotation += dir;
+}
+
+void tetromino_move(Tetromino* t, int y, int x) {
+    t->y += y;
+    t->x += x;
+}
+
 /* Return true if a space in the 4x4 shape matrix is an empty (0) bit. */
 bool tetromino_bit_is_empty(Tetromino* t, int row, int col) {
     int shift = col + row * 4;
     int bit = 0x8000; // 1000 0000 0000 0000
                       // shift it to the right by `shift` bits to check
                       // the given matrix value
-    return !((bit >> shift) & shapes[t->shape][t->rotation]);
+    return !((bit >> shift) & shapes[t->shape][abs(t->rotation) % 4]);
 }
 
 /* Draw the given tetromino. */
@@ -102,8 +111,8 @@ void tetromino_render(Renderer* rend, Tetromino *t) {
 bool tetromino_can_move_to(Tetromino* t, Board* b, int dest_y, int dest_x, int next_rot) { 
     // Save current rotation in case the checks fail.
     int old_rot = t->rotation;
-    if (next_rot) {
-        t->rotation = (t->rotation + 1) % 4;
+    if (next_rot != 0) {
+        tetromino_rotate(t, next_rot);
     }
 
     for (int y = 0; y < 4; y++) {

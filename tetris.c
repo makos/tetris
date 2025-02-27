@@ -15,6 +15,9 @@
  * - wall kicks
  * - menu
  * - update to SDL3?
+ * - ghost piece
+ * - outline of stored blocks
+ * - "lock" VFX (piece flashes)
  * BUG:
  * - game over should be when there's no place to spawn; now it spawns a piece
  *   and only after it gets stored it's game over
@@ -23,7 +26,7 @@ int main() {
     srand(time(NULL));
     Game* game = game_init();
     if (!game) {
-        printf("Error!\n");
+        printf("Error initializing game struct!\n");
         return -1;
     }
     SDL_Event e;
@@ -59,8 +62,11 @@ int main() {
         if (keys[SDL_SCANCODE_DOWN]) {
             game_handle_action(game, ACTION_DOWN);
         }
-        if (keys[SDL_SCANCODE_Z]) {
+        if (keys[SDL_SCANCODE_X] || keys[SDL_SCANCODE_UP]) {
             game_handle_action(game, ACTION_ROTATE);
+        }
+        if (keys[SDL_SCANCODE_Z] || keys[SDL_SCANCODE_LCTRL] || keys[SDL_SCANCODE_RCTRL]) {
+            game_handle_action(game, ACTION_ROTATE_CCW);
         }
         if (keys[SDL_SCANCODE_SPACE]) {
             game_handle_action(game, ACTION_HARDDROP);

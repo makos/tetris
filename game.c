@@ -9,6 +9,12 @@
 #include "board.h"
 #include "tetromino.h"
 
+#define LEFT -1
+#define RIGHT 1
+#define DOWN 1
+#define ROTATE_CW 1
+#define ROTATE_CCW -1
+
 void game_store_tetromino(Game* g) {
     board_store_tetromino(g->board, g->current);
     free(g->current);
@@ -103,26 +109,31 @@ void game_handle_input(Game* g) {
         if (g->action[i] == 1) {
             switch (i) {
                 case ACTION_LEFT:
-                    if (tetromino_can_move_to(g->current, g->board, 0, -1, 0))
-                        g->current->x -= 1;
+                    if (tetromino_can_move_to(g->current, g->board, 0, LEFT, 0))
+                        tetromino_move(g->current, 0, LEFT);
                     break;
                 case ACTION_RIGHT:
-                    if (tetromino_can_move_to(g->current, g->board, 0, 1, 0))
-                        g->current->x += 1;
+                    if (tetromino_can_move_to(g->current, g->board, 0, RIGHT, 0))
+                        tetromino_move(g->current, 0, RIGHT);
                     break;
                 case ACTION_DOWN:
-                    if (tetromino_can_move_to(g->current, g->board, 1, 0, 0))
-                        g->current->y += 1;
+                    if (tetromino_can_move_to(g->current, g->board, DOWN, 0, 0))
+                        tetromino_move(g->current, DOWN, 0);
                     else
                         game_store_tetromino(g);
                     break;
                 case ACTION_ROTATE:
-                    if (tetromino_can_move_to(g->current, g->board, 0, 0, 1))
-                        g->current->rotation = (g->current->rotation + 1) % 4;
+                    if (tetromino_can_move_to(g->current, g->board, 0, 0, ROTATE_CW))
+                        tetromino_rotate(g->current, ROTATE_CW);
+                    break;
+                case ACTION_ROTATE_CCW:
+                    if (tetromino_can_move_to(g->current, g->board, 0, 0, ROTATE_CCW)) {
+                        tetromino_rotate(g->current, ROTATE_CCW);
+                    }
                     break;
                 case ACTION_HARDDROP:
-                    while (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) {
-                        g->current->y += 1;
+                    while (tetromino_can_move_to(g->current, g->board, DOWN, 0, 0)) {
+                        tetromino_move(g->current, DOWN, 0);
                     }
                     game_store_tetromino(g);
                     break;
@@ -194,6 +205,7 @@ void game_handle_action(Game* g, int action) {
             break;
         case ACTION_ROTATE:
         case ACTION_HARDDROP:
+        case ACTION_ROTATE_CCW:
             if (g->action_frames[action] == 1) {
                 g->action[action] = 1;
             }

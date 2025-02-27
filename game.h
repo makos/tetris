@@ -1,14 +1,14 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define MAX_ACTIONS 5
+#define MAX_ACTIONS 6
 #define MAX_TETROMINOS 7
 
 typedef struct Renderer Renderer;
 typedef struct Tetromino Tetromino;
 typedef struct Board Board;
 
-enum Actions { ACTION_LEFT, ACTION_RIGHT, ACTION_DOWN, ACTION_ROTATE, ACTION_HARDDROP };
+enum Actions { ACTION_LEFT, ACTION_RIGHT, ACTION_DOWN, ACTION_ROTATE, ACTION_HARDDROP, ACTION_ROTATE_CCW };
 
 typedef struct Game {
     Renderer* renderer;

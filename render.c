@@ -6,9 +6,7 @@
 #include "defs.h"
 
 SDL_Texture* load_texture(Renderer* r, char* path) {
-    SDL_Surface *s = IMG_Load(path);
-    SDL_Texture* t = SDL_CreateTextureFromSurface(r->rend, s);
-    SDL_FreeSurface(s);
+    SDL_Texture* t = IMG_LoadTexture(r->rend, path);
     return t;
 }
 
