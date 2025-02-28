@@ -23,13 +23,7 @@ void game_store_tetromino(Game* g) {
     g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
 }
 
-Game* game_init() {
-    Game* g = malloc(sizeof(Game));
-
-    g->renderer = render_init();
-    if (!g->renderer) {
-        return NULL;
-    }
+void game_zero(Game* g) {
     g->board = board_init();
     g->current = NULL;
     g->next = NULL;
@@ -41,11 +35,21 @@ Game* game_init() {
     g->lines_cleared = 0;
     g->level = 1;
     g->block_frames = 0;
-
+    g->state = STATE_MENU;
     for (int i = 0; i < MAX_ACTIONS; i++) {
         g->action[i] = 0;
         g->action_frames[i] = 0;
     }
+}
+
+Game* game_init() {
+    Game* g = malloc(sizeof(Game));
+
+    g->renderer = render_init();
+    if (!g->renderer) {
+        return NULL;
+    }
+    game_zero(g);
 
     game_update_fall_delay(g);
 
@@ -63,6 +67,30 @@ Game* game_init() {
     g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
 
     return g;
+}
+
+void game_reset(Game* g) {
+    free(g->current);
+    free(g->next);
+    free(g->board);
+
+    game_zero(g);
+    g->state = STATE_GAME;
+
+    game_update_fall_delay(g);
+
+    game_shuffle_bag(g);
+
+    g->current = tetromino_create(g, 0, 0);
+    // Check what we pulled, if we got S, Z or O, redo.
+    while (g->current->shape == SHAPE_O
+            || g->current->shape == SHAPE_S 
+            || g->current->shape == SHAPE_Z) {
+        free(g->current);
+        game_shuffle_bag(g);
+        g->current = tetromino_create(g, 0, 0);
+    } 
+    g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
 }
 
 void game_update_fall_delay(Game* g) {
@@ -87,17 +115,30 @@ void game_render(Game* g) {
     memset(buf, 0, 256);
 
     render_clear_screen(g->renderer);
-    render_grid(g->renderer);
-    board_render(g->renderer, g->board);
-    tetromino_render(g->renderer, g->current);
-    tetromino_render(g->renderer, g->next);
-    render_border(g->renderer);
-    // Score
-    sprintf(buf, "Score: %d", g->score);
-    render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, buf);
-    // Level
-    sprintf(buf, "Level: %d", g->level);
-    render_text(g->renderer, BLOCK_HEIGHT*6, BLOCK_WIDTH*11, buf);
+
+    switch (g->state) {
+        case STATE_GAME:
+            render_grid(g->renderer);
+            board_render(g->renderer, g->board);
+            tetromino_render(g->renderer, g->current);
+            tetromino_render(g->renderer, g->next);
+            render_border(g->renderer);
+            // Score
+            sprintf(buf, "Score: %d", g->score);
+            render_text(g->renderer, BLOCK_HEIGHT*5, BLOCK_WIDTH*11, buf);
+            // Level
+            sprintf(buf, "Level: %d", g->level);
+            render_text(g->renderer, BLOCK_HEIGHT*6, BLOCK_WIDTH*11, buf);
+            break;
+        case STATE_MENU:
+            sprintf(buf, "%s", "TETRIS");
+            render_text(g->renderer, (SCREEN_HEIGHT - 24)/2, (SCREEN_WIDTH - 3)/2, buf);
+            sprintf(buf, "%s", "PRESS ENTER TO PLAY");
+            render_text(g->renderer, (SCREEN_HEIGHT + 24)/2, (SCREEN_WIDTH - 20)/2, buf);
+            sprintf(buf, "%s", "ESCAPE TO QUIT");
+            render_text(g->renderer, (SCREEN_HEIGHT + 60)/2, (SCREEN_WIDTH - 20)/2, buf);
+            break;
+    }
     // FPS
     sprintf(buf, "%.2f", g->renderer->fps);
     render_text(g->renderer, 5, 5, buf);

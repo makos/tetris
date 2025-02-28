@@ -10,6 +10,8 @@ typedef struct Board Board;
 
 enum Actions { ACTION_LEFT, ACTION_RIGHT, ACTION_DOWN, ACTION_ROTATE, ACTION_HARDDROP, ACTION_ROTATE_CCW };
 
+enum States { STATE_MENU, STATE_GAME };
+
 typedef struct Game {
     Renderer* renderer;
     Board* board;
@@ -27,9 +29,11 @@ typedef struct Game {
     int fall_delay;
     int level;
     unsigned int block_frames;
+    int state;
 } Game;
 
 Game* game_init();
+void game_reset(Game* g);
 
 void game_update_fall_delay(Game* g);
 void game_shutdown(Game* g);
