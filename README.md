@@ -2,7 +2,7 @@
 Clone of Tetris in C and SDL3.
 
 ## Building
-Requires SDL3 installed. Just run `make` and then `./tetris`.
+Requires SDL3, SDL3_ttf and SDL3_image installed. Just run `make` and then `./tetris`.
 
 ## Controls
 - left and right arrows - move left and right
