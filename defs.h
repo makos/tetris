@@ -10,11 +10,6 @@
 #define BLOCK_WIDTH 40
 #define BLOCK_HEIGHT 40 
 
-#define BLOCK_TICK_INTERVAL 700
-
-#define COLOR_WHITE 0xffffffff
 #define COLOR_BLACK 0xff000000
-#define COLOR_RED   0xffff0000
-#define COLOR_BLUE  0x0180ff
 
 #endif //__DEFS_H
