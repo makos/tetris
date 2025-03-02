@@ -185,27 +185,29 @@ void game_handle_input(Game* g) {
 }
 
 void game_update(Game* g) {
-    if (g->block_frames % g->fall_delay == 0) {
-        if (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) 
-            g->current->y += 1;
-        else {
-            game_store_tetromino(g);
+    if (g->state == STATE_GAME) {
+        if (g->block_frames % g->fall_delay == 0) {
+            if (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) 
+                g->current->y += 1;
+            else {
+                game_store_tetromino(g);
+            }
         }
-    }
 
-    board_update(g->board, g);
+        board_update(g->board, g);
 
-    if (g->lines_cleared % 10 == 0) {
-        if (!g->levelled_up) {
-            g->level++;
-            game_update_fall_delay(g);
+        if (g->lines_cleared % 10 == 0) {
+            if (!g->levelled_up) {
+                g->level++;
+                game_update_fall_delay(g);
+            }
+            g->levelled_up = true;
+        } else {
+            g->levelled_up = false;
         }
-        g->levelled_up = true;
-    } else {
-        g->levelled_up = false;
-    }
 
-    g->block_frames++;
+        g->block_frames++;
+    }
 }
 
 void game_shuffle_bag(Game* g) {
