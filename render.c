@@ -10,6 +10,7 @@
 
 SDL_Texture* load_texture(Renderer* r, char* path) {
     SDL_Texture* t = IMG_LoadTexture(r->rend, path);
+    SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND);
     return t;
 }
 
@@ -29,6 +30,7 @@ Renderer* render_init() {
     }
 
     SDL_SetRenderDrawColor(r->rend, 0x0, 0x0, 0x0, 0xff);
+    SDL_SetRenderDrawBlendMode(r->rend, SDL_BLENDMODE_BLEND);
 
     if (!TTF_Init()) {
         printf("SDL TTF init error: %s\n", SDL_GetError());
@@ -68,13 +70,10 @@ double clamp(double d, double min, double max) {
     return t > max ? max : t;
 }
 
-void render_block(Renderer *rend, int y, int x, int color) {
-    Uint8 r, g, b;
-    SDL_Surface* w = SDL_GetWindowSurface(rend->w);
-    SDL_GetRGB(color, SDL_GetPixelFormatDetails(w->format), NULL, &r, &g, &b);
-
+void render_block(Renderer *rend, int y, int x, Color color) {
     SDL_FRect rect = render_get_block_rect(y, x);
-    SDL_SetTextureColorMod(rend->block, r, g, b);
+    SDL_SetTextureColorMod(rend->block, color.r, color.g, color.b);
+    SDL_SetTextureAlphaMod(rend->block, color.a);
     SDL_RenderTexture(rend->rend, rend->block, NULL, &rect);
 }
 
@@ -87,12 +86,11 @@ void render_shutdown(Renderer* r) {
     SDL_DestroyRenderer(r->rend);
     SDL_DestroyWindow(r->w);
 
-    //IMG_Quit();
     SDL_Quit();   
 }
 
 void render_clear_screen(Renderer* r) {
-    SDL_SetRenderDrawColor(r->rend, 0x0, 0x0, 0x0, 0xff);
+    SDL_SetRenderDrawColor(r->rend, 0, 0, 0, 0xff);
     SDL_RenderClear(r->rend);
 }
 

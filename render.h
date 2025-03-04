@@ -1,6 +1,8 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include "color.h"
+
 typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Surface SDL_Surface;
 typedef struct SDL_FRect SDL_FRect;
@@ -10,7 +12,6 @@ typedef struct SDL_Renderer SDL_Renderer;
 
 typedef struct Renderer {
     SDL_Window* w; // main game window
-    //SDL_Surface* w_surf;
     TTF_Font* font;
     SDL_Texture* block;
     SDL_Renderer* rend;
@@ -22,7 +23,7 @@ typedef struct Renderer {
 Renderer* render_init();
 SDL_FRect render_get_block_rect(int y, int x);
 void render_shutdown(Renderer* r);
-void render_block(Renderer* r, int y, int x, int color);
+void render_block(Renderer* r, int y, int x, Color color);
 void render_clear_screen(Renderer* r);
 void render_update_screen(Renderer* r);
 void render_text(Renderer* r, int y, int x, char* text);

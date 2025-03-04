@@ -1,6 +1,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+
+#include <SDL3/SDL_pixels.h>
 
 #include "tetromino.h"
 #include "defs.h"
@@ -8,14 +11,14 @@
 #include "board.h"
 #include "game.h"
 
-unsigned long colors[7] = {
-    0xef7921, // L
-    0x31c7ef, // I
-    0xf7d308, // O
-    0x5a65ad, // J
-    0x42b642, // S
-    0xef2029, // Z
-    0xad4d9c  // T
+unsigned long colors[7][4] = {
+ {0xef, 0x79, 0x21, 0xff}, // L
+ {0x31, 0xc7, 0xef, 0xff}, // I
+ {0xf7, 0xd3, 0x08, 0xff}, // O
+ {0x5a, 0x65, 0xad, 0xff}, // J
+ {0x42, 0xb6, 0x42, 0xff}, // S
+ {0xef, 0x20, 0x29, 0xff}, // Z
+ {0xad, 0x4d, 0x9c, 0xff}  // T
 };
 
 /* Shapes and their rotations.
@@ -43,13 +46,13 @@ int shapes[7][4] = {
  * Used to spawn the pieces in correct positions.
  */
 int start_offset[7][2] = {
-    { -1, 3 }, // L
-    { -2, 3 }, // I
-    { -1, 3 }, // O
-    { -1, 2 }, // J
-    { -1, 2 }, // S
-    { -1, 3 }, // Z
-    { -1, 2 }  // T
+    { -4, 3 }, // L
+    { -3, 3 }, // I
+    { -4, 3 }, // O
+    { -4, 2 }, // J
+    { -4, 2 }, // S
+    { -4, 3 }, // Z
+    { -4, 2 }  // T
 };
 
 /* Create new randomly chosen piece. 
@@ -64,9 +67,25 @@ Tetromino* tetromino_create(Game* g, int y, int x) {
     t->rotation = 0;
     t->y = y + start_offset[t->shape][0];
     t->x = x + start_offset[t->shape][1];
-    t->color = colors[t->shape];
+    t->color.r = colors[t->shape][0];
+    t->color.g = colors[t->shape][1];
+    t->color.b = colors[t->shape][2];
+    t->color.a = colors[t->shape][3];
 
     return t;
+}
+
+Tetromino* tetromino_create_ghost(Tetromino* t, Game* g) {
+    Tetromino* new_t = malloc(sizeof(Tetromino));
+    memcpy(new_t, t, sizeof(Tetromino));
+
+    new_t->color.a = 0x60;
+
+    while (tetromino_can_move_to(new_t, g->board, 1, 0, 0)) {
+        new_t->y++;
+    }
+
+    return new_t;
 }
 
 void tetromino_move_to_spawn(Tetromino* t) {

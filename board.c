@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <SDL3/SDL_pixels.h>
+
 #include "tetromino.h"
 #include "board.h"
 #include "render.h"
@@ -19,7 +21,10 @@ Board* board_init() {
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
             b->cell[y][x].type = BLOCK_EMPTY;
-            b->cell[y][x].color = COLOR_BLACK;
+            b->cell[y][x].color.r = 0;
+            b->cell[y][x].color.g = 0;
+            b->cell[y][x].color.b = 0;
+            b->cell[y][x].color.a = 0xff;
             b->cell[y][x].to_clear = false;
             b->cell[y][x].show = false;
         }

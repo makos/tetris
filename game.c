@@ -14,13 +14,16 @@
 #define DOWN 1
 #define ROTATE_CW 1
 #define ROTATE_CCW -1
+#define NEXT_MINO_OFFSET 4
 
 void game_store_tetromino(Game* g) {
     board_store_tetromino(g->board, g->current);
     free(g->current);
+    free(g->ghost);
     g->current = g->next;
     tetromino_move_to_spawn(g->current);
-    g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
+    g->next = tetromino_create(g, NEXT_MINO_OFFSET, BOARD_WIDTH-2);
+    g->ghost = tetromino_create_ghost(g->current, g);
 }
 
 void game_zero(Game* g) {
@@ -64,7 +67,8 @@ Game* game_init() {
         game_shuffle_bag(g);
         g->current = tetromino_create(g, 0, 0);
     } 
-    g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
+    g->ghost = tetromino_create_ghost(g->current, g);
+    g->next = tetromino_create(g, NEXT_MINO_OFFSET, BOARD_WIDTH-2);
 
     return g;
 }
@@ -73,6 +77,7 @@ void game_reset(Game* g) {
     free(g->current);
     free(g->next);
     free(g->board);
+    free(g->ghost);
 
     game_zero(g);
     g->state = STATE_GAME;
@@ -91,6 +96,7 @@ void game_reset(Game* g) {
         g->current = tetromino_create(g, 0, 0);
     } 
     g->next = tetromino_create(g, 1, BOARD_WIDTH-2);
+    g->ghost = tetromino_create_ghost(g->current, g);
 }
 
 void game_update_fall_delay(Game* g) {
@@ -104,6 +110,7 @@ void game_update_fall_delay(Game* g) {
 void game_shutdown(Game* g) {
     free(g->current);
     free(g->next);
+    free(g->ghost);
     free(g->board);
     render_shutdown(g->renderer);
     free(g->renderer);
@@ -122,6 +129,7 @@ void game_render(Game* g) {
             board_render(g->renderer, g->board);
             tetromino_render(g->renderer, g->current);
             tetromino_render(g->renderer, g->next);
+            tetromino_render(g->renderer, g->ghost);
             render_border(g->renderer);
             // Score
             sprintf(buf, "Score: %d", g->score);
@@ -150,12 +158,16 @@ void game_handle_input(Game* g) {
         if (g->action[i] == 1) {
             switch (i) {
                 case ACTION_LEFT:
-                    if (tetromino_can_move_to(g->current, g->board, 0, LEFT, 0))
+                    if (tetromino_can_move_to(g->current, g->board, 0, LEFT, 0)) {
                         tetromino_move(g->current, 0, LEFT);
+                        tetromino_move(g->ghost, 0, LEFT);
+                    }
                     break;
                 case ACTION_RIGHT:
-                    if (tetromino_can_move_to(g->current, g->board, 0, RIGHT, 0))
+                    if (tetromino_can_move_to(g->current, g->board, 0, RIGHT, 0)) {
                         tetromino_move(g->current, 0, RIGHT);
+                        tetromino_move(g->ghost, 0, RIGHT);
+                    }
                     break;
                 case ACTION_DOWN:
                     if (tetromino_can_move_to(g->current, g->board, DOWN, 0, 0))
@@ -187,7 +199,7 @@ void game_handle_input(Game* g) {
 void game_update(Game* g) {
     if (g->state == STATE_GAME) {
         if (g->block_frames % g->fall_delay == 0) {
-            if (tetromino_can_move_to(g->current, g->board, 1, 0, 0)) 
+            if (tetromino_can_move_to(g->current, g->board, DOWN, 0, 0)) 
                 g->current->y += 1;
             else {
                 game_store_tetromino(g);
@@ -207,6 +219,12 @@ void game_update(Game* g) {
         }
 
         g->block_frames++;
+
+        g->ghost->rotation = g->current->rotation;
+        g->ghost->y = g->current->y;
+        while (tetromino_can_move_to(g->ghost, g->board, DOWN, 0, 0)) {
+            g->ghost->y++;
+        }
     }
 }
 

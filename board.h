@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "defs.h"
+#include "color.h"
 
 typedef struct Renderer Renderer;
 typedef struct Tetromino Tetromino;
@@ -11,7 +12,8 @@ typedef enum BlockType { BLOCK_EMPTY, BLOCK_FULL } BlockType;
 
 typedef struct Cell {
     BlockType type;
-    unsigned long color;
+    //unsigned long color;
+    Color color;
     int to_clear;
     int show;
 } Cell;

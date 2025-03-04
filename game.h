@@ -17,6 +17,7 @@ typedef struct Game {
     Board* board;
     Tetromino* current;
     Tetromino* next;
+    Tetromino* ghost;
 
     int bag[MAX_TETROMINOS];
     int action[MAX_ACTIONS];
